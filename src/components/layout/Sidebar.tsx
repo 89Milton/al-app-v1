@@ -20,6 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
+  // Navigation component with Project Dashboard in second position
   const location = useLocation();
   const [isAnalysisOpen, setIsAnalysisOpen] = useState(
     location.pathname.includes("/analysis")
