@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Navigation component with Project Dashboard in second position - Deployment update
+// Navigation component with Project Dashboard in second position - Updated for Vercel deployment
 export function Sidebar() {
   const location = useLocation();
   const [isAnalysisOpen, setIsAnalysisOpen] = useState(
