@@ -5,8 +5,15 @@ import { ProjectTimelineBudgetChart } from "./metrics/ProjectTimelineBudgetChart
 import { CostEstimateRefinementChart } from "./metrics/CostEstimateRefinementChart";
 import { TechnologyValidationChart } from "./metrics/TechnologyValidationChart";
 import { RiskRegisterClosureChart } from "./metrics/RiskRegisterClosureChart";
+import { SeverityDistributionChart } from "./SeverityDistributionChart";
+import { ChangeOrderSeverity } from "@/models/changeOrder";
 
-export function ProjectMetricsGrid() {
+interface ProjectMetricsGridProps {
+  severityDistribution: any; // Replace 'any' with proper type
+  onSeverityClick: (severity: ChangeOrderSeverity) => void;
+}
+
+export function ProjectMetricsGrid({ severityDistribution, onSeverityClick }: ProjectMetricsGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {/* Risk Metrics Group */}
@@ -56,6 +63,19 @@ export function ProjectMetricsGrid() {
         </CardHeader>
         <CardContent className="h-[calc(400px-4rem)] flex items-center justify-center">
           <TechnologyValidationChart />
+        </CardContent>
+      </Card>
+
+      {/* Severity Distribution Group */}
+      <Card className="min-h-[400px]">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-md">Severity Distribution</CardTitle>
+        </CardHeader>
+        <CardContent className="h-[calc(400px-4rem)] flex items-center justify-center">
+          <SeverityDistributionChart 
+            data={severityDistribution} 
+            onSliceClick={onSeverityClick}
+          />
         </CardContent>
       </Card>
     </div>

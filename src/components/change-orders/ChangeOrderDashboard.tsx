@@ -78,7 +78,10 @@ export function ChangeOrderDashboard() {
       {/* Project Performance Metrics Section */}
       <div className="mb-6">
         <DataPanel title="Project Performance Metrics">
-          <ProjectMetricsGrid />
+          <ProjectMetricsGrid 
+            severityDistribution={mockChangeOrderSummary.severityDistribution}
+            onSeverityClick={(severity) => setSeverityFilter(severity)}
+          />
         </DataPanel>
       </div>
 
