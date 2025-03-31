@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { 
@@ -47,6 +46,16 @@ export function Sidebar() {
             >
               <Home className="h-4 w-4" />
               <span>Dashboard</span>
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink 
+              to="/change-orders" 
+              className={({ isActive }) => cn("nav-link", isActive && "active")}
+            >
+              <FileEdit className="h-4 w-4" />
+              <span>Project Dashboard</span>
             </NavLink>
           </li>
 
@@ -161,16 +170,6 @@ export function Sidebar() {
                 </div>
               )}
             </div>
-          </li>
-
-          <li>
-            <NavLink 
-              to="/change-orders" 
-              className={({ isActive }) => cn("nav-link", isActive && "active")}
-            >
-              <FileEdit className="h-4 w-4" />
-              <span>EPC Design Change Orders</span>
-            </NavLink>
           </li>
 
           <li>

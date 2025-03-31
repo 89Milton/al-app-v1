@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { MonthlyChangeOrderChart } from "./MonthlyChangeOrderChart";
 import { ChangeOrderSummaryCards } from "./ChangeOrderSummaryCards";
@@ -77,7 +76,7 @@ export function ChangeOrderDashboard() {
   return (
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">EPC Design Change Orders</h1>
+        <h1 className="text-2xl font-bold">Project Dashboard</h1>
         <div className="flex gap-2">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[400px]">
             <TabsList className="grid grid-cols-2">
