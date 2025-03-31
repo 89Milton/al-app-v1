@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { MonthlyChangeOrderChart } from "./MonthlyChangeOrderChart";
 import { ChangeOrderSummaryCards } from "./ChangeOrderSummaryCards";
@@ -76,6 +75,13 @@ export function ChangeOrderDashboard() {
 
   return (
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto">
+      {/* Project Performance Metrics Section */}
+      <div className="mb-6">
+        <DataPanel title="Project Performance Metrics">
+          <ProjectMetricsGrid />
+        </DataPanel>
+      </div>
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">EPC Design Change Orders</h1>
         <div className="flex gap-2">
@@ -221,13 +227,6 @@ export function ChangeOrderDashboard() {
                   statuses={mockChangeOrderSummary.statusDistribution}
                   averageApprovalDays={mockChangeOrderSummary.averageApprovalDays}
                 />
-              </DataPanel>
-            </div>
-            
-            {/* New Project Metrics Section */}
-            <div className="col-span-12">
-              <DataPanel title="Project Performance Metrics">
-                <ProjectMetricsGrid />
               </DataPanel>
             </div>
           </div>
