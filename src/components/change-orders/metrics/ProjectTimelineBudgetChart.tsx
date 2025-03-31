@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   BarChart,
@@ -8,11 +7,20 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
+  TooltipProps
 } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
 
+interface ProjectPhaseData {
+  phase: string;
+  planned: number;
+  actual: number;
+  budget: number;
+  spent: number;
+}
+
 // Mock data - in a real app this would come from API or props
-const data = [
+const data: ProjectPhaseData[] = [
   { phase: "Planning", planned: 100, actual: 110, budget: 2000, spent: 2200 },
   { phase: "Design", planned: 90, actual: 100, budget: 5000, spent: 5100 },
   { phase: "Procurement", planned: 120, actual: 115, budget: 10000, spent: 9500 },
@@ -40,29 +48,30 @@ export function ProjectTimelineBudgetChart() {
 
   const [activeTab, setActiveTab] = React.useState<"timeline" | "budget">("timeline");
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
+      const data = payload[0].payload as ProjectPhaseData;
       return (
         <div className="bg-background border rounded-md shadow-sm p-2 text-sm">
           <p className="font-medium">{label}</p>
           {activeTab === "timeline" ? (
             <>
-              <p className="text-[#6366f1]">Planned: {payload[0].value} days</p>
-              <p className="text-[#3b82f6]">Actual: {payload[1].value} days</p>
+              <p className="text-[#6366f1]">Planned: {data.planned} days</p>
+              <p className="text-[#3b82f6]">Actual: {data.actual} days</p>
               <p className="text-xs text-muted-foreground mt-1">
-                {payload[1].value > payload[0].value 
-                  ? `${payload[1].value - payload[0].value} days behind schedule` 
-                  : `${payload[0].value - payload[1].value} days ahead of schedule`}
+                {data.actual > data.planned 
+                  ? `${data.actual - data.planned} days behind schedule` 
+                  : `${data.planned - data.actual} days ahead of schedule`}
               </p>
             </>
           ) : (
             <>
-              <p className="text-[#6366f1]">Budget: ${payload[0].value.toLocaleString()}</p>
-              <p className="text-[#3b82f6]">Spent: ${payload[1].value.toLocaleString()}</p>
+              <p className="text-[#6366f1]">Budget: ${data.budget.toLocaleString()}</p>
+              <p className="text-[#3b82f6]">Spent: ${data.spent.toLocaleString()}</p>
               <p className="text-xs text-muted-foreground mt-1">
-                {payload[1].value > payload[0].value 
-                  ? `$${(payload[1].value - payload[0].value).toLocaleString()} over budget` 
-                  : `$${(payload[0].value - payload[1].value).toLocaleString()} under budget`}
+                {data.spent > data.budget 
+                  ? `$${(data.spent - data.budget).toLocaleString()} over budget` 
+                  : `$${(data.budget - data.spent).toLocaleString()} under budget`}
               </p>
             </>
           )}

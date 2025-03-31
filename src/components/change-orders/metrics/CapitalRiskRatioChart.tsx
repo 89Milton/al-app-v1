@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   LineChart,
@@ -8,6 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  TooltipProps
 } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
 import { formatPercent } from "@/lib/utils";
@@ -28,6 +28,11 @@ const data = [
   { month: "Dec", ratio: 6.3 },
 ];
 
+interface DataPoint {
+  month: string;
+  ratio: number;
+}
+
 export function CapitalRiskRatioChart() {
   const chartConfig = {
     capitalRisk: {
@@ -46,7 +51,7 @@ export function CapitalRiskRatioChart() {
     },
   };
   
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-background border rounded-md shadow-sm p-2 text-sm">

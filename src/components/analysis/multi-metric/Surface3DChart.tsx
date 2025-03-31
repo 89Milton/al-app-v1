@@ -1,12 +1,35 @@
-
 import { useEffect, useRef } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 
-export function Surface3DChart() {
-  // This is a placeholder for a 3D surface chart
-  // In a real implementation, you would use a library like Three.js or Plot.ly
-  
+interface Surface3DData {
+  x: number;
+  y: number;
+  z: number;
+  xLabel: string;
+  yLabel: string;
+  zLabel: string;
+}
+
+interface Surface3DChartProps {
+  data?: Surface3DData[][];
+  xAxisVariable?: string;
+  yAxisVariable?: string;
+  zAxisVariable?: string;
+  onXAxisChange?: (variable: string) => void;
+  onYAxisChange?: (variable: string) => void;
+  onZAxisChange?: (variable: string) => void;
+}
+
+export function Surface3DChart({
+  data,
+  xAxisVariable = "energy_price",
+  yAxisVariable = "capex",
+  zAxisVariable = "irr",
+  onXAxisChange,
+  onYAxisChange,
+  onZAxisChange
+}: Surface3DChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   useEffect(() => {
@@ -66,8 +89,8 @@ export function Surface3DChart() {
         const x4 = margin + x * (width - 2 * margin) / 10;
         const y4 = height - margin - (y + 1) * (height - 2 * margin) / 10;
         
-        // Calculate z value (height) based on x and y
-        const z = Math.sin(x / 3) * Math.cos(y / 3) * 0.5 + 0.5;
+        // Use provided data or calculate z value (height) based on x and y
+        const z = data?.[x]?.[y]?.z ?? Math.sin(x / 3) * Math.cos(y / 3) * 0.5 + 0.5;
         
         // Color based on z value
         let r, g, b;
@@ -110,7 +133,7 @@ export function Surface3DChart() {
     ctx.fillText('Energy Price', width / 2, height - 10);
     ctx.fillText('IRR', width - 30, 20);
     
-  }, []);
+  }, [data]);
   
   return (
     <div className="w-full p-4">
@@ -119,7 +142,7 @@ export function Surface3DChart() {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <span className="text-sm">X-Axis:</span>
-            <Select defaultValue="energy_price">
+            <Select value={xAxisVariable} onValueChange={onXAxisChange}>
               <SelectTrigger className="w-[140px] h-8 text-xs">
                 <SelectValue placeholder="Select variable" />
               </SelectTrigger>
@@ -131,7 +154,7 @@ export function Surface3DChart() {
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-sm">Y-Axis:</span>
-            <Select defaultValue="capex">
+            <Select value={yAxisVariable} onValueChange={onYAxisChange}>
               <SelectTrigger className="w-[140px] h-8 text-xs">
                 <SelectValue placeholder="Select variable" />
               </SelectTrigger>
@@ -143,7 +166,7 @@ export function Surface3DChart() {
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-sm">Z-Axis:</span>
-            <Select defaultValue="irr">
+            <Select value={zAxisVariable} onValueChange={onZAxisChange}>
               <SelectTrigger className="w-[140px] h-8 text-xs">
                 <SelectValue placeholder="Select metric" />
               </SelectTrigger>

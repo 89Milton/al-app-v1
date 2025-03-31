@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   BarChart,
@@ -9,11 +8,18 @@ import {
   ResponsiveContainer,
   Cell,
   ReferenceLine,
+  TooltipProps
 } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
 
+interface ValidationData {
+  component: string;
+  validationScore: number;
+  target: number;
+}
+
 // Mock data - in a real app this would come from API or props
-const data = [
+const data: ValidationData[] = [
   { component: "Module A", validationScore: 95, target: 90 },
   { component: "Module B", validationScore: 88, target: 90 },
   { component: "Interface C", validationScore: 92, target: 90 },
@@ -52,22 +58,21 @@ export function TechnologyValidationChart() {
     return "var(--color-critical)";
   };
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
-      const score = payload[0].value;
-      const target = payload[0].payload.target;
+      const data = payload[0].payload as ValidationData;
       
       return (
         <div className="bg-background border rounded-md shadow-sm p-2 text-sm">
           <p className="font-medium">{label}</p>
-          <p>Validation Score: {score}%</p>
-          <p>Target: {target}%</p>
+          <p>Validation Score: {data.validationScore}%</p>
+          <p>Target: {data.target}%</p>
           <p className={`text-xs font-medium ${
-            score >= target ? "text-green-500" : 
-            score >= target - 5 ? "text-amber-500" : "text-red-500"
+            data.validationScore >= data.target ? "text-green-500" : 
+            data.validationScore >= data.target - 5 ? "text-amber-500" : "text-red-500"
           }`}>
-            {score >= target ? "Above target ✓" : 
-             score >= target - 5 ? "Near target ⚠️" : "Below target ✗"}
+            {data.validationScore >= data.target ? "Above target ✓" : 
+             data.validationScore >= data.target - 5 ? "Near target ⚠️" : "Below target ✗"}
           </p>
         </div>
       );

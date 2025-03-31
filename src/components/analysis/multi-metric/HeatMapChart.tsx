@@ -1,8 +1,27 @@
-
 import { useEffect, useRef } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export function HeatMapChart() {
+interface HeatMapData {
+  value: number;
+  xLabel: string;
+  yLabel: string;
+}
+
+interface HeatMapChartProps {
+  data?: HeatMapData[][];
+  xAxisVariable?: string;
+  yAxisVariable?: string;
+  onXAxisChange?: (variable: string) => void;
+  onYAxisChange?: (variable: string) => void;
+}
+
+export function HeatMapChart({
+  data,
+  xAxisVariable = "energy_price",
+  yAxisVariable = "capex",
+  onXAxisChange,
+  onYAxisChange
+}: HeatMapChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   useEffect(() => {
@@ -45,9 +64,8 @@ export function HeatMapChart() {
     // Draw the heat map cells
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
-        // Generate a value between 0 and 1 based on position
-        // This would normally come from your actual data
-        const normalizedValue = Math.min(1, Math.max(0, 
+        // Use provided data or generate a value between 0 and 1 based on position
+        const normalizedValue = data?.[i]?.[j]?.value ?? Math.min(1, Math.max(0, 
           (1 - i / rows) * 0.8 + (j / cols) * 0.7 + Math.random() * 0.1
         ));
         
@@ -79,7 +97,7 @@ export function HeatMapChart() {
         ctx.fillText(irrValue, margin + j * cellSize + cellSize/2 - 10, margin + i * cellSize + cellSize/2 + 3);
       }
     }
-  }, []);
+  }, [data]);
   
   return (
     <div className="w-full p-4">
@@ -88,7 +106,7 @@ export function HeatMapChart() {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <span className="text-sm">X-Axis:</span>
-            <Select defaultValue="energy_price">
+            <Select value={xAxisVariable} onValueChange={onXAxisChange}>
               <SelectTrigger className="w-[140px] h-8 text-xs">
                 <SelectValue placeholder="Select variable" />
               </SelectTrigger>
@@ -101,7 +119,7 @@ export function HeatMapChart() {
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-sm">Y-Axis:</span>
-            <Select defaultValue="capex">
+            <Select value={yAxisVariable} onValueChange={onYAxisChange}>
               <SelectTrigger className="w-[140px] h-8 text-xs">
                 <SelectValue placeholder="Select variable" />
               </SelectTrigger>

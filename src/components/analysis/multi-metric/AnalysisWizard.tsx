@@ -1,12 +1,5 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { 
-  AnalysisConfiguration,
-  Metric, 
-  Project, 
-  Variable 
-} from "../MultiMetricAnalysisTool";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -22,6 +15,45 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { DataPanel } from "@/components/ui/DataPanel";
 import { Check } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+
+type AnalysisType = "one-way" | "two-way" | "three-way";
+type MetricCategory = "financial" | "technical" | "operational" | "environmental";
+type VariableCategory = "financial" | "technical" | "operational" | "environmental";
+
+interface Metric {
+  id: string;
+  name: string;
+  description: string;
+  category: MetricCategory;
+  unit: string;
+}
+
+interface Variable {
+  id: string;
+  name: string;
+  category: VariableCategory;
+  unit: string;
+  minValue: number;
+  maxValue: number;
+  baseValue: number;
+}
+
+interface Project {
+  id: string;
+  name: string;
+  technology: string;
+  baseValues: Record<string, number>;
+}
+
+interface AnalysisConfiguration {
+  analysisType: AnalysisType;
+  numberOfSteps: number;
+  projects: Project[];
+  variables: Variable[];
+  metrics: Metric[];
+  selectedVariables: Variable[];
+  selectedMetrics: Metric[];
+}
 
 interface AnalysisWizardProps {
   onClose: () => void;

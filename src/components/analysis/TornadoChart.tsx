@@ -98,7 +98,7 @@ export function TornadoChart({
   });
 
   // Handle clicking on a bar
-  const handleClick = (data: any) => {
+  const handleClick = (data: { variable: string; positiveDelta: number; negativeDelta: number; baseline: number; category?: string; unit?: string }) => {
     if (onVariableClick && data && data.variable) {
       onVariableClick(data.variable);
     }

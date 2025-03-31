@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Table,
@@ -18,22 +17,58 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  Legend
+  Legend,
+  TooltipProps
 } from "recharts";
 
+type MetricType = "npv" | "irr" | "paybackPeriod" | "debtServiceCoverage" | "equityMultiple";
+
+interface SensitivityRanking {
+  variable: string;
+  impact: number;
+  rank: number;
+}
+
+interface MonteCarloResults {
+  npv: number[];
+  irr: number[];
+  paybackPeriod: number[];
+  debtServiceCoverage: number[];
+  equityMultiple: number[];
+  confidenceIntervals: Record<MetricType, [number, number]>;
+  sensitivityRanking: SensitivityRanking[];
+}
+
 interface MonteCarloResultsProps {
-  results: any;
+  results: MonteCarloResults;
+}
+
+interface PercentileStats {
+  min: number;
+  p10: number;
+  p25: number;
+  median: number;
+  p75: number;
+  p90: number;
+  max: number;
+  mean: number;
+  stdDev: number;
+}
+
+interface ScatterDataPoint {
+  x: number;
+  y: number;
 }
 
 export function MonteCarloResults({ results }: MonteCarloResultsProps) {
   const [activeTab, setActiveTab] = useState("detailed");
-  const [xMetric, setXMetric] = useState("npv");
-  const [yMetric, setYMetric] = useState("irr");
+  const [xMetric, setXMetric] = useState<MetricType>("npv");
+  const [yMetric, setYMetric] = useState<MetricType>("irr");
 
   if (!results) return null;
 
   // Format values for display
-  const formatValue = (value: number, metric: string) => {
+  const formatValue = (value: number, metric: MetricType) => {
     if (metric === "npv") return `$${(value / 1000000).toFixed(2)}M`;
     if (metric === "irr") return `${(value * 100).toFixed(2)}%`;
     if (metric === "paybackPeriod") return `${value.toFixed(2)} years`;
@@ -43,7 +78,7 @@ export function MonteCarloResults({ results }: MonteCarloResultsProps) {
   };
 
   // Generate scatter plot data
-  const generateScatterData = () => {
+  const generateScatterData = (): ScatterDataPoint[] => {
     // Return 100 random samples from the simulation for the scatter plot
     const sampleSize = 100;
     const sampleIndices = Array.from({ length: results[xMetric].length }, (_, i) => i)
@@ -57,7 +92,7 @@ export function MonteCarloResults({ results }: MonteCarloResultsProps) {
   };
 
   // Calculate percentiles for a given array
-  const getPercentiles = (arr: number[]) => {
+  const getPercentiles = (arr: number[]): PercentileStats => {
     const sorted = [...arr].sort((a, b) => a - b);
     const len = sorted.length;
     return {
@@ -76,7 +111,7 @@ export function MonteCarloResults({ results }: MonteCarloResultsProps) {
   };
 
   // Get statistics for all metrics
-  const statistics = {
+  const statistics: Record<MetricType, PercentileStats> = {
     npv: getPercentiles(results.npv),
     irr: getPercentiles(results.irr),
     paybackPeriod: getPercentiles(results.paybackPeriod),
@@ -84,9 +119,9 @@ export function MonteCarloResults({ results }: MonteCarloResultsProps) {
     equityMultiple: getPercentiles(results.equityMultiple)
   };
 
-  const CustomScatterTooltip = ({ active, payload }: any) => {
+  const CustomScatterTooltip = ({ active, payload }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
+      const data = payload[0].payload as ScatterDataPoint;
       return (
         <div className="glassmorphism rounded-lg p-3 text-sm">
           <p className="font-medium">Simulation Result</p>
@@ -199,7 +234,7 @@ export function MonteCarloResults({ results }: MonteCarloResultsProps) {
                   id="x-metric"
                   className="text-sm p-2 border rounded-md"
                   value={xMetric}
-                  onChange={(e) => setXMetric(e.target.value)}
+                  onChange={(e) => setXMetric(e.target.value as MetricType)}
                 >
                   <option value="npv">Net Present Value</option>
                   <option value="irr">Internal Rate of Return</option>
@@ -214,7 +249,7 @@ export function MonteCarloResults({ results }: MonteCarloResultsProps) {
                   id="y-metric"
                   className="text-sm p-2 border rounded-md"
                   value={yMetric}
-                  onChange={(e) => setYMetric(e.target.value)}
+                  onChange={(e) => setYMetric(e.target.value as MetricType)}
                 >
                   <option value="npv">Net Present Value</option>
                   <option value="irr">Internal Rate of Return</option>

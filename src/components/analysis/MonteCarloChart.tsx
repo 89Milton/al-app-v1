@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import {
   AreaChart,
@@ -10,22 +9,46 @@ import {
   ResponsiveContainer,
   ReferenceLine,
   Label,
-  Legend
+  Legend,
+  TooltipProps
 } from "recharts";
 import { formatNumber } from "@/lib/utils";
 import { DataPanel } from "@/components/ui/DataPanel";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatMetricValue } from "./utils/monteCarloUtils";
 
+type MetricType = "npv" | "irr" | "paybackPeriod" | "debtServiceCoverage" | "equityMultiple";
+
+interface MonteCarloResults {
+  npv: number[];
+  irr: number[];
+  paybackPeriod: number[];
+  debtServiceCoverage: number[];
+  equityMultiple: number[];
+  confidenceIntervals: Record<MetricType, [number, number]>;
+}
+
+interface HistogramBin {
+  bin: number;
+  frequency: number;
+  cumulative: number;
+}
+
+interface MetricDisplayConfig {
+  title: string;
+  format: (val: number) => string;
+  color: string;
+}
+
 interface MonteCarloChartProps {
-  results: any;
+  results: MonteCarloResults;
 }
 
 export function MonteCarloChart({ results }: MonteCarloChartProps) {
-  const [metric, setMetric] = useState("npv");
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [metric, setMetric] = useState<MetricType>("npv");
+  const [chartData, setChartData] = useState<HistogramBin[]>([]);
   const [confidenceInterval, setConfidenceInterval] = useState<[number, number]>([0, 0]);
-  const [metricSettings, setMetricSettings] = useState({
+  const [metricSettings, setMetricSettings] = useState<MetricDisplayConfig>({
     title: "Net Present Value (NPV)",
     format: (val: number) => `$${formatNumber(val)}`,
     color: "#8B5CF6"
@@ -75,7 +98,7 @@ export function MonteCarloChart({ results }: MonteCarloChartProps) {
     setConfidenceInterval(results.confidenceIntervals[metric]);
     
     // Set metric-specific settings
-    const metricDisplayConfig: Record<string, any> = {
+    const metricDisplayConfig: Record<MetricType, MetricDisplayConfig> = {
       npv: {
         title: "Net Present Value (NPV)",
         format: (val: number) => `$${formatNumber(val)}`,
@@ -113,11 +136,12 @@ export function MonteCarloChart({ results }: MonteCarloChartProps) {
   };
 
   // Custom tooltip
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
-      const binValue = formatTooltipValue(payload[0].payload.bin);
-      const frequency = payload[0].payload.frequency;
-      const cumulative = (payload[0].payload.cumulative * 100).toFixed(1);
+      const data = payload[0].payload as HistogramBin;
+      const binValue = formatTooltipValue(data.bin);
+      const frequency = data.frequency;
+      const cumulative = (data.cumulative * 100).toFixed(1);
       
       return (
         <div className="glassmorphism rounded-lg p-3 text-sm">
@@ -134,7 +158,7 @@ export function MonteCarloChart({ results }: MonteCarloChartProps) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">{metricSettings.title} Distribution</h3>
-        <Select value={metric} onValueChange={setMetric}>
+        <Select value={metric} onValueChange={(value: string) => setMetric(value as MetricType)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
           </SelectTrigger>

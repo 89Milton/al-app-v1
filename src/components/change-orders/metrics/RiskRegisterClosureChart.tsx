@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   LineChart,
@@ -9,11 +8,19 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Legend,
+  TooltipProps
 } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
 
+interface RiskData {
+  month: string;
+  identified: number;
+  mitigated: number;
+  closure: number;
+}
+
 // Mock data - in a real app this would come from API or props
-const data = [
+const data: RiskData[] = [
   { month: "Jan", identified: 12, mitigated: 5, closure: 41.7 },
   { month: "Feb", identified: 18, mitigated: 10, closure: 55.6 },
   { month: "Mar", identified: 15, mitigated: 9, closure: 60.0 },
@@ -48,19 +55,20 @@ export function RiskRegisterClosureChart() {
     },
   };
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
+      const data = payload[0].payload as RiskData;
       return (
         <div className="bg-background border rounded-md shadow-sm p-2 text-sm">
           <p className="font-medium">{label}</p>
           <p className="text-[#38bdf8]">
-            Risks Identified: {payload[0].value}
+            Risks Identified: {data.identified}
           </p>
           <p className="text-[#4ade80]">
-            Risks Mitigated: {payload[1].value}
+            Risks Mitigated: {data.mitigated}
           </p>
           <p className="text-[#818cf8]">
-            Closure Rate: {payload[2].value}%
+            Closure Rate: {data.closure}%
           </p>
         </div>
       );

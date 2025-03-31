@@ -1,4 +1,3 @@
-
 import { NPVCard } from "./summary-cards/NPVCard";
 import { IRRCard } from "./summary-cards/IRRCard";
 import { PaybackCard } from "./summary-cards/PaybackCard";
@@ -7,8 +6,26 @@ import { EquityMultipleCard } from "./summary-cards/EquityMultipleCard";
 import { RiskFactorsCard } from "./summary-cards/RiskFactorsCard";
 import { calculateMean, calculateProbability, formatMetricValue } from "./utils/monteCarloUtils";
 
+type MetricType = "npv" | "irr" | "paybackPeriod" | "debtServiceCoverage" | "equityMultiple";
+
+interface SensitivityRanking {
+  variable: string;
+  impact: number;
+  rank: number;
+}
+
+interface MonteCarloResults {
+  npv: number[];
+  irr: number[];
+  paybackPeriod: number[];
+  debtServiceCoverage: number[];
+  equityMultiple: number[];
+  confidenceIntervals: Record<MetricType, [number, number]>;
+  sensitivityRanking: SensitivityRanking[];
+}
+
 interface MonteCarloSummaryProps {
-  results: any;
+  results: MonteCarloResults;
 }
 
 export function MonteCarloSummary({ results }: MonteCarloSummaryProps) {

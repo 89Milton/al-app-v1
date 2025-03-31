@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   LineChart,
@@ -10,11 +9,19 @@ import {
   CartesianGrid,
   Area,
   AreaChart,
+  TooltipProps
 } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
 
+interface CostEstimateData {
+  phase: string;
+  estimate: number;
+  rangeLow: number;
+  rangeHigh: number;
+}
+
 // Mock data - in a real app this would come from API or props
-const data = [
+const data: CostEstimateData[] = [
   { phase: "Initial", estimate: 18500000, rangeLow: 16000000, rangeHigh: 21000000 },
   { phase: "Planning", estimate: 19200000, rangeLow: 17500000, rangeHigh: 21000000 },
   { phase: "30% Design", estimate: 19800000, rangeLow: 18700000, rangeHigh: 21000000 },
@@ -41,19 +48,20 @@ export function CostEstimateRefinementChart() {
     },
   };
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
+      const data = payload[0].payload as CostEstimateData;
       return (
         <div className="bg-background border rounded-md shadow-sm p-2 text-sm">
           <p className="font-medium">{label}</p>
           <p className="text-[#38bdf8]">
-            Estimate: ${payload[1].value.toLocaleString()}
+            Estimate: ${data.estimate.toLocaleString()}
           </p>
           <p className="text-muted-foreground text-xs">
-            Range: ${payload[0].value.toLocaleString()} - ${payload[2].value.toLocaleString()}
+            Range: ${data.rangeLow.toLocaleString()} - ${data.rangeHigh.toLocaleString()}
           </p>
           <p className="text-muted-foreground text-xs">
-            Uncertainty: ±{Math.round(((payload[2].value - payload[0].value) / (2 * payload[1].value)) * 100)}%
+            Uncertainty: ±{Math.round(((data.rangeHigh - data.rangeLow) / (2 * data.estimate)) * 100)}%
           </p>
         </div>
       );

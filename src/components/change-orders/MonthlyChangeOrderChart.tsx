@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   BarChart, 
@@ -10,7 +9,8 @@ import {
   Legend, 
   ResponsiveContainer, 
   Line, 
-  ComposedChart 
+  ComposedChart,
+  TooltipProps
 } from "recharts";
 import { MonthlyChangeOrderData } from "@/models/changeOrder";
 import { formatCurrency } from "@/lib/utils";
@@ -46,8 +46,9 @@ export function MonthlyChangeOrderChart({
     : 0;
   
   // Custom tooltip component
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
+      const data = payload[0].payload as MonthlyChangeOrderData;
       return (
         <div className="bg-background border border-border rounded-md shadow-md p-3 text-sm">
           <p className="font-bold">{label}</p>
@@ -60,7 +61,7 @@ export function MonthlyChangeOrderChart({
             )}
           </p>
           <p className="text-green-600">
-            Monthly Impact: {formatCurrency(payload[1].payload.costImpact)}
+            Monthly Impact: {formatCurrency(data.costImpact)}
           </p>
           <p className="text-red-600">
             Cumulative Impact: {formatCurrency(payload[2].value)}
